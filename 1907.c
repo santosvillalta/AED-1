@@ -1,31 +1,47 @@
 #include <stdio.h>
 
 int N, M;
-char grid[1025][1025];
-int visited[1025][1025];
+char g[1025][1025];
+int vis[1025][1025];
 
-void dfs(int x, int y) {
-    if (x < 0 || x >= N || y < 0 || y >= M) return;
-    if (grid[x][y] != '.' || visited[x][y]) return;
-    visited[x][y] = 1;
-    dfs(x+1, y);
-    dfs(x-1, y);
-    dfs(x, y+1);
-    dfs(x, y-1);
-}
+int qx[2000000], qy[2000000];
 
 int main() {
     scanf("%d %d", &N, &M);
-    for (int i = 0; i < N; i++) scanf("%s", grid[i]);
+    for (int i = 0; i < N; i++) scanf("%s", g[i]);
 
-    int count = 0;
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < M; j++)
-            if (grid[i][j] == '.' && !visited[i][j]) {
-                dfs(i, j);
-                count++;
+    int ans = 0;
+    int dx[4] = {1, -1, 0, 0};
+    int dy[4] = {0, 0, 1, -1};
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            if (g[i][j] == '.' && !vis[i][j]) {
+                ans++;
+                int h = 0, t = 0;
+                qx[t] = i; qy[t] = j; t++;
+                vis[i][j] = 1;
+
+                while (h < t) {
+                    int x = qx[h], y = qy[h];
+                    h++;
+                    for (int k = 0; k < 4; k++) {
+                        int nx = x + dx[k];
+                        int ny = y + dy[k];
+                        if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
+                            if (g[nx][ny] == '.' && !vis[nx][ny]) {
+                                vis[nx][ny] = 1;
+                                qx[t] = nx;
+                                qy[t] = ny;
+                                t++;
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
 
-    printf("%d\n", count);
+    printf("%d\n", ans);
     return 0;
 }
